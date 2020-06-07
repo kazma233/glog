@@ -11,19 +11,29 @@ import (
 
 // Router 设置路由和中间件
 func Router() *gin.Engine {
-	engine := gin.Default()
+	g := gin.Default()
 
-	engine.HandleMethodNotAllowed = true
-	engine.Use(logsFilter)
-	engine.Use(crosFilter)
+	g.HandleMethodNotAllowed = true
+	g.Use(logsFilter)
+	g.Use(corsFilter)
 
-	articleGroup := engine.Group("/articles")
+	articleGroup := g.Group("/articles")
 	articleGroup.GET("", handler.ArticleCtr.Articles)
+	articleGroup.GET("/:first", handlerArticleRouter)
 	articleGroup.POST("", handler.ArticleCtr.Save)
-	articleGroup.GET("/group", handler.ArticleCtr.Group)
 
-	engine.Use(errorFilter)
-	return engine
+	g.Use(errorFilter)
+	return g
+}
+
+func handlerArticleRouter(c *gin.Context) {
+	one := c.Param("first")
+	if "group" == one {
+		handler.ArticleCtr.Group(c)
+		return
+	}
+
+	handler.ArticleCtr.Detail(c)
 }
 
 // 异常拦截器
@@ -46,8 +56,8 @@ func errorFilter(c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusInternalServerError, models.UNKNOW_ERROR)
 }
 
-// crosFilter 跨越中间件
-func crosFilter(c *gin.Context) {
+// corsFilter 跨域中间件
+func corsFilter(c *gin.Context) {
 	origin := c.Request.Header.Get("Origin")
 	if origin == "" {
 		origin = "*"

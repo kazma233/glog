@@ -17,12 +17,23 @@ var ArticleCtr = &ctrArticle{}
 // Articles 文章列表
 func (*ctrArticle) Articles(c *gin.Context) {
 	articleQuery := &models.ArticleQuery{}
+
 	if err := c.ShouldBindQuery(articleQuery); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.PARAM_BIND_ERROR)
 		return
 	}
 
-	c.JSON(http.StatusOK, models.Success(service.Article(articleQuery)))
+	c.JSON(http.StatusOK, models.Success(service.ArticleService.Article(articleQuery)))
+}
+
+func (*ctrArticle) Detail(c *gin.Context) {
+	id := c.Param("first")
+	if id == "" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.PARAM_BIND_ERROR)
+		return
+	}
+
+	c.JSON(http.StatusOK, models.Success(service.ArticleService.Detail(id)))
 }
 
 // Save 保存文章
@@ -33,7 +44,7 @@ func (*ctrArticle) Save(c *gin.Context) {
 		return
 	}
 
-	service.Save(articleSave)
+	service.ArticleService.Save(articleSave)
 
 	c.JSON(http.StatusOK, models.Success(nil))
 }
@@ -41,5 +52,5 @@ func (*ctrArticle) Save(c *gin.Context) {
 // Group 分组查询
 func (*ctrArticle) Group(c *gin.Context) {
 
-	c.JSON(http.StatusOK, models.Success(service.FindArticleGroupByArchive()))
+	c.JSON(http.StatusOK, models.Success(service.ArticleService.FindArticleGroupByArchive()))
 }

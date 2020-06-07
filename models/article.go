@@ -16,11 +16,11 @@ const (
 
 // Article 文章实体
 type Article struct {
-	ArticleID   string        `bson:"articleID" json:"id"`
+	ArticleID   string        `bson:"articleId" json:"id"`
 	Title       string        `bson:"title" json:"title"`
 	Tags        []string      `bson:"tags" json:"tags"`
 	Category    string        `bson:"category" json:"category"`
-	SubTitle    string        `bson:"subTitle" json:"subTitle"`
+	SubTitle    string        `bson:"subTitle" json:"subtitle"`
 	Content     string        `baon:"content" json:"content"`
 	CreateTime  LocalTime     `bson:"createTime" json:"-"`
 	UpdateTime  LocalTime     `bson:"updateTime" json:"latestTime"`
@@ -54,8 +54,37 @@ type (
 )
 
 type (
+	// ArticleSimple 没有content的Article实体
+	ArticleSimple struct {
+		ArticleID  string    `bson:"articleId" json:"id"`
+		Title      string    `bson:"title" json:"title"`
+		Tags       []string  `bson:"tags" json:"tags"`
+		Category   string    `bson:"category" json:"category"`
+		SubTitle   string    `bson:"subTitle" json:"subtitle"`
+		UpdateTime LocalTime `bson:"updateTime" json:"latestTime"`
+	}
+
+	// ArticleDetail Article实体
+	ArticleDetail struct {
+		ArticleID  string    `bson:"articleId" json:"id"`
+		Title      string    `bson:"title" json:"title"`
+		Tags       []string  `bson:"tags" json:"tags"`
+		Category   string    `bson:"category" json:"category"`
+		SubTitle   string    `bson:"subTitle" json:"subtitle"`
+		Content    string    `baon:"content" json:"content"`
+		Visit      int64     `bson:"visit" json:"visit"`
+		UpdateTime LocalTime `bson:"updateTime" json:"latestTime"`
+	}
+
+	// ArticleGroupSimple 归档
+	ArticleGroupSimple struct {
+		ArticleID string `bson:"articleId" json:"id"`
+		Title     string `bson:"title" json:"title"`
+		Visit     int64  `bson:"visit" json:"visit"`
+	}
+
 	// ArticleGroup 文章归档日期聚合
 	ArticleGroup struct {
-		Articles []Article `bson:"articles" json:"articles"`
+		Articles []ArticleGroupSimple `bson:"articles" json:"articles"`
 	}
 )

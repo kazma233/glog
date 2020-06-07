@@ -8,8 +8,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type articleDaoctr struct{}
+
+// ArticleDao 控制获取Article的doa
+var ArticleDao = articleDaoctr{}
+
 // FindArticle 分页查找文章
-func FindArticle(articleQuery *models.ArticleQuery) ([]models.Article, error) {
+func (articleDaoctr) FindArticle(articleQuery *models.ArticleQuery) ([]models.ArticleSimple, error) {
 	skip := (articleQuery.PageNo - 1) * articleQuery.PageSize
 
 	cursor, err := ArticleCollection.Find(
@@ -17,6 +22,7 @@ func FindArticle(articleQuery *models.ArticleQuery) ([]models.Article, error) {
 		bson.M{"status": models.ArticleShow},
 		options.
 			Find().
+			SetProjection(bson.M{"articleId": 1, "title": 1, "tags": 1, "category": 1, "subTitle": 1, "updateTime": 1}).
 			SetSkip(skip).
 			SetLimit(articleQuery.PageSize).
 			SetSort(bson.M{"createTime": -1}),
@@ -27,26 +33,49 @@ func FindArticle(articleQuery *models.ArticleQuery) ([]models.Article, error) {
 	}
 	defer cursor.Close(Create3SCtx())
 
-	articles := []models.Article{}
+	articles := []models.ArticleSimple{}
 	err = cursor.All(Create3SCtx(), &articles)
 
 	return articles, err
 }
 
+func (articleDaoctr) CountArticle(articleQuery *models.ArticleQuery) (int64, error) {
+	return ArticleCollection.CountDocuments(Create3SCtx(), bson.M{"status": models.ArticleShow})
+}
+
+func (articleDaoctr) Article(id string) (*models.ArticleDetail, error) {
+	articleDetail := &models.ArticleDetail{}
+	sr := ArticleCollection.FindOne(
+		Create3SCtx(),
+		bson.M{"status": models.ArticleShow, "articleId": id},
+		options.
+			FindOne().
+			SetProjection(bson.M{"articleId": 1, "title": 1, "tags": 1, "category": 1, "subTitle": 1, "updateTime": 1, "content": 1, "visit": 1}),
+	)
+	if err := sr.Err(); err != nil {
+		return nil, err
+	}
+
+	err := sr.Decode(articleDetail)
+
+	return articleDetail, err
+}
+
 // SaveArticle 保存
-func SaveArticle(article *models.Article) error {
+func (articleDaoctr) SaveArticle(article *models.Article) error {
 	_, err := ArticleCollection.InsertOne(Create3SCtx(), article)
 
 	return err
 }
 
 // FindArticleGroupByArchive 按归档日期分组查询
-func FindArticleGroupByArchive() ([]models.ArticleGroup, error) {
+func (articleDaoctr) FindArticleGroupByArchive() ([]models.ArticleGroup, error) {
 	result := []models.ArticleGroup{}
 
 	cursor, err := ArticleCollection.Aggregate(Create3SCtx(), mongo.Pipeline{
 		{{"$match", bson.D{{"status", models.ArticleShow}}}},
 		{{"$group", bson.D{{"_id", "archiveDate"}, {"articles", bson.D{{"$push", "$$ROOT"}}}}}},
+		{{"$project", bson.D{{"articles.articleId", 1}, {"articles.title", 1}, {"articles.visit", 1}}}},
 	})
 
 	if err != nil {

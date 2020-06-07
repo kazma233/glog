@@ -1,0 +1,20 @@
+version: '3.5'
+
+services: 
+  glog:
+    container_name: glog_server
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    volumes: 
+      - ./config:/app/config
+  glog_mongo:
+    image: mongo
+    container_name: glog_mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+    volumes:
+      - ./glog-mongo/db:/data/db
