@@ -21,7 +21,7 @@ type Article struct {
 	Tags        []string      `bson:"tags" json:"tags"`
 	Category    string        `bson:"category" json:"category"`
 	SubTitle    string        `bson:"subTitle" json:"subtitle"`
-	Content     string        `baon:"content" json:"content"`
+	Content     string        `bson:"content" json:"content"`
 	CreateTime  LocalTime     `bson:"createTime" json:"-"`
 	UpdateTime  LocalTime     `bson:"updateTime" json:"latestTime"`
 	Visit       int64         `bson:"visit" json:"visit"`
@@ -71,7 +71,7 @@ type (
 		Tags       []string  `bson:"tags" json:"tags"`
 		Category   string    `bson:"category" json:"category"`
 		SubTitle   string    `bson:"subTitle" json:"subtitle"`
-		Content    string    `baon:"content" json:"content"`
+		Content    string    `bson:"content" json:"content"`
 		Visit      int64     `bson:"visit" json:"visit"`
 		UpdateTime LocalTime `bson:"updateTime" json:"latestTime"`
 	}

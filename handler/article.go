@@ -19,7 +19,7 @@ func (*ctrArticle) Articles(c *gin.Context) {
 	articleQuery := &models.ArticleQuery{}
 
 	if err := c.ShouldBindQuery(articleQuery); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, models.PARAM_BIND_ERROR)
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorParamBind)
 		return
 	}
 
@@ -29,7 +29,7 @@ func (*ctrArticle) Articles(c *gin.Context) {
 func (*ctrArticle) Detail(c *gin.Context) {
 	id := c.Param("first")
 	if id == "" {
-		c.AbortWithStatusJSON(http.StatusBadRequest, models.PARAM_BIND_ERROR)
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorParamBind)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (*ctrArticle) Detail(c *gin.Context) {
 func (*ctrArticle) Save(c *gin.Context) {
 	articleSave := &models.ArticleSave{}
 	if err := c.BindJSON(articleSave); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, models.PARAM_BIND_ERROR)
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorParamBind)
 		return
 	}
 

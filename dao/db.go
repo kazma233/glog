@@ -13,12 +13,15 @@ import (
 var dbName = "blog"
 var articleCollectionName = "article"
 var articleCategoryCollectionName = "article_category"
+var userCollectionName = "user"
 
 var (
-	// ArticleCollection article collection
-	ArticleCollection *mongo.Collection
-	// ArticleCategoryCollection article category collection
-	ArticleCategoryCollection *mongo.Collection
+	// articleColl article collection
+	articleColl *mongo.Collection
+	// articleCategoryColl article category collection
+	articleCategoryColl *mongo.Collection
+	// userColl user collection
+	userColl *mongo.Collection
 )
 
 func init() {
@@ -35,7 +38,7 @@ func init() {
 			Password: mongoConf.Password,
 		})
 
-	client, err := mongo.Connect(Create3SCtx(), clientOptions)
+	client, err := mongo.Connect(create3SCtx(), clientOptions)
 
 	if err != nil {
 		panic(err)
@@ -43,12 +46,13 @@ func init() {
 
 	dbClient := client.Database(dbName)
 
-	ArticleCollection = dbClient.Collection(articleCollectionName)
-	ArticleCategoryCollection = dbClient.Collection(articleCategoryCollectionName)
+	articleColl = dbClient.Collection(articleCollectionName)
+	articleCategoryColl = dbClient.Collection(articleCategoryCollectionName)
+	userColl = dbClient.Collection(userCollectionName)
 }
 
-// Create3SCtx 获取3s的context
-func Create3SCtx() context.Context {
+// create3SCtx 获取3s的context
+func create3SCtx() context.Context {
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
 	return ctx
 }

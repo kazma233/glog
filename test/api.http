@@ -1,23 +1,35 @@
 @local-service = http://127.0.0.1:9600
+@prod-server = https://kazma233.me/api
 
 ### 获取文章
-GET {{local-service}}/articles HTTP/1.1
+GET {{prod-server}}/articles HTTP/1.1
 
 ### 文章详情
 GET {{local-service}}/articles/bre6uvsn5rrijo1dprfg HTTP/1.1
 
 ###
-POST {{local-service}}/articles HTTP/1.1
+POST {{prod-server}}/articles HTTP/1.1
 Content-Type: application/json
 
 {
-    "title":"测试文章2",
+    "title":"git分支管理规范",
     "subTitle":"测试文章副标题",
     "content":"这是被内容",
     "status":"SHOW",
-    "tags":["测试","1"],
-    "category":"测试"
+    "tags":["教程"],
+    "category":"教程"
 }
 
 ###
 GET {{local-service}}/articles/group HTTP/1.1
+
+## user
+
+###
+POST {{local-service}}/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "username":"kazma",
+    "password":"123"
+}

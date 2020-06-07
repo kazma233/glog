@@ -6,3 +6,4 @@ mongo:
 
 # release为正式
 env: DEV
+jwt-key: WC7fkchY6FL6eS

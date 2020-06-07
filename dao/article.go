@@ -17,8 +17,8 @@ var ArticleDao = articleDaoctr{}
 func (articleDaoctr) FindArticle(articleQuery *models.ArticleQuery) ([]models.ArticleSimple, error) {
 	skip := (articleQuery.PageNo - 1) * articleQuery.PageSize
 
-	cursor, err := ArticleCollection.Find(
-		Create3SCtx(),
+	cursor, err := articleColl.Find(
+		create3SCtx(),
 		bson.M{"status": models.ArticleShow},
 		options.
 			Find().
@@ -31,22 +31,22 @@ func (articleDaoctr) FindArticle(articleQuery *models.ArticleQuery) ([]models.Ar
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(Create3SCtx())
+	defer cursor.Close(create3SCtx())
 
 	articles := []models.ArticleSimple{}
-	err = cursor.All(Create3SCtx(), &articles)
+	err = cursor.All(create3SCtx(), &articles)
 
 	return articles, err
 }
 
 func (articleDaoctr) CountArticle(articleQuery *models.ArticleQuery) (int64, error) {
-	return ArticleCollection.CountDocuments(Create3SCtx(), bson.M{"status": models.ArticleShow})
+	return articleColl.CountDocuments(create3SCtx(), bson.M{"status": models.ArticleShow})
 }
 
 func (articleDaoctr) Article(id string) (*models.ArticleDetail, error) {
 	articleDetail := &models.ArticleDetail{}
-	sr := ArticleCollection.FindOne(
-		Create3SCtx(),
+	sr := articleColl.FindOne(
+		create3SCtx(),
 		bson.M{"status": models.ArticleShow, "articleId": id},
 		options.
 			FindOne().
@@ -63,7 +63,7 @@ func (articleDaoctr) Article(id string) (*models.ArticleDetail, error) {
 
 // SaveArticle 保存
 func (articleDaoctr) SaveArticle(article *models.Article) error {
-	_, err := ArticleCollection.InsertOne(Create3SCtx(), article)
+	_, err := articleColl.InsertOne(create3SCtx(), article)
 
 	return err
 }
@@ -72,7 +72,7 @@ func (articleDaoctr) SaveArticle(article *models.Article) error {
 func (articleDaoctr) FindArticleGroupByArchive() ([]models.ArticleGroup, error) {
 	result := []models.ArticleGroup{}
 
-	cursor, err := ArticleCollection.Aggregate(Create3SCtx(), mongo.Pipeline{
+	cursor, err := articleColl.Aggregate(create3SCtx(), mongo.Pipeline{
 		{{"$match", bson.D{{"status", models.ArticleShow}}}},
 		{{"$group", bson.D{{"_id", "archiveDate"}, {"articles", bson.D{{"$push", "$$ROOT"}}}}}},
 		{{"$project", bson.D{{"articles.articleId", 1}, {"articles.title", 1}, {"articles.visit", 1}}}},
@@ -82,7 +82,7 @@ func (articleDaoctr) FindArticleGroupByArchive() ([]models.ArticleGroup, error) 
 		return nil, err
 	}
 
-	err = cursor.All(Create3SCtx(), &result)
+	err = cursor.All(create3SCtx(), &result)
 
 	return result, err
 }

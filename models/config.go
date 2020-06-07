@@ -12,4 +12,5 @@ type mongoConf struct {
 type Config struct {
 	MongoConfig mongoConf `yaml:"mongo"`
 	Env         string    `yaml:"env"`
+	JwtKey      string    `yaml:"jwt-key"`
 }

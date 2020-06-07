@@ -22,6 +22,9 @@ func Router() *gin.Engine {
 	articleGroup.GET("/:first", handlerArticleRouter)
 	articleGroup.POST("", handler.ArticleCtr.Save)
 
+	userGroup := g.Group("/users")
+	userGroup.POST("/login", handler.UserCtr.Login)
+
 	g.Use(errorFilter)
 	return g
 }
@@ -39,21 +42,21 @@ func handlerArticleRouter(c *gin.Context) {
 // 异常拦截器
 func errorFilter(c *gin.Context) {
 	if c.Writer.Status() == http.StatusNotFound {
-		c.AbortWithStatusJSON(http.StatusNotFound, models.RESOURCE_NOT_EXITS)
+		c.AbortWithStatusJSON(http.StatusNotFound, models.Error404)
 		return
 	}
 	if c.Writer.Status() == http.StatusMethodNotAllowed {
-		c.AbortWithStatusJSON(http.StatusMethodNotAllowed, models.METHOD_NOT_ALLOWED)
+		c.AbortWithStatusJSON(http.StatusMethodNotAllowed, models.Error405)
 		return
 	}
 	if c.Writer.Status() == http.StatusUnauthorized {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, models.NOT_AUTH)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.Error401)
 		return
 	}
 
 	uri := c.Request.RequestURI
 	logx.Error("find error: uri=%v, params=%v, errors=%v", uri, c.Params, c.Errors)
-	c.AbortWithStatusJSON(http.StatusInternalServerError, models.UNKNOW_ERROR)
+	c.AbortWithStatusJSON(http.StatusInternalServerError, models.Error500)
 }
 
 // corsFilter 跨域中间件
