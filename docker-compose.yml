@@ -9,7 +9,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
     volumes:
-      - ./glog-mongo/db:/data/db
+      - ~/glog-mongo/db:/data/db
   glog:
     container_name: glog_server
     build: 
