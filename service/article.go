@@ -6,6 +6,7 @@ import (
 	"glog/utils/logx"
 	"glog/utils/pageable"
 	"glog/utils/tools"
+	"strings"
 	"time"
 
 	"github.com/rs/xid"
@@ -55,7 +56,7 @@ func (articleServiceCtr) Save(articleSave *models.ArticleSave) {
 	article := &models.Article{
 		ArticleID:   xid.New().String(),
 		Title:       articleSave.Title,
-		Tags:        articleSave.Tags,
+		Tags:        strings.Split(articleSave.Tags, ","),
 		Category:    articleSave.Category,
 		SubTitle:    articleSave.SubTitle,
 		Content:     articleSave.Content,

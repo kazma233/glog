@@ -1,11 +1,13 @@
 package main
 
 import (
+	"glog/config"
 	"glog/handler"
 	"glog/models"
 	"glog/utils/logx"
 	"net/http"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,16 +16,19 @@ func Router() *gin.Engine {
 	g := gin.Default()
 
 	g.HandleMethodNotAllowed = true
-	g.Use(logsFilter)
 	g.Use(corsFilter)
+	g.Use(logsFilter)
 
 	articleGroup := g.Group("/articles")
 	articleGroup.GET("", handler.ArticleCtr.Articles)
 	articleGroup.GET("/:first", handlerArticleRouter)
-	articleGroup.POST("", handler.ArticleCtr.Save)
 
 	userGroup := g.Group("/users")
 	userGroup.POST("/login", handler.UserCtr.Login)
+	userGroup.POST("/register", handler.UserCtr.Register)
+
+	manageGroup := g.Group("/manage", authRouter)
+	manageGroup.POST("/articles", handler.ArticleCtr.Save)
 
 	g.Use(errorFilter)
 	return g
@@ -59,6 +64,25 @@ func errorFilter(c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusInternalServerError, models.Error500)
 }
 
+// authRouter 认证拦截器
+func authRouter(c *gin.Context) {
+	auth := c.GetHeader("auth")
+	token, err := jwt.ParseWithClaims(auth, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(config.Conf().JwtKey), nil
+	})
+
+	if err != nil {
+		logx.Error("jwt 解析失败: %v", err)
+
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	standardClaims := token.Claims.(*jwt.StandardClaims)
+	c.Set(models.ConsUID, standardClaims.Id)
+	c.Next()
+}
+
 // corsFilter 跨域中间件
 func corsFilter(c *gin.Context) {
 	origin := c.Request.Header.Get("Origin")
@@ -69,7 +93,7 @@ func corsFilter(c *gin.Context) {
 	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 	c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 	c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Set-Cookie, Accept, Origin, User-Agent, x-requested-with, access-control-allow-origin")
+	c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept, Origin, User-Agent, auth")
 	c.Writer.Header().Set("Access-Control-Max-Age", "36000")
 
 	// 如果是options方法，直接返回状态200就行了

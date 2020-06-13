@@ -19,3 +19,10 @@ func (userDao) FindByUsername(username string) (*models.User, error) {
 
 	return user, err
 }
+
+// Insert 新增用户
+func (userDao) Insert(userRegister *models.UserRegister) error {
+	_, err := userColl.InsertOne(create3SCtx(), userRegister)
+
+	return err
+}

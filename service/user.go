@@ -38,11 +38,29 @@ func (userSer) Login(login *models.UserLogin) (string, error) {
 		},
 	)
 
-	toeknString, err := token.SignedString(config.Conf().JwtKey)
+	toeknString, err := token.SignedString([]byte(config.Conf().JwtKey))
 	if err != nil {
 		logx.Error("生成jwt token错误: %v", err)
 		return "", models.ErrUnknow
 	}
 
 	return toeknString, nil
+}
+
+func (userSer) Register(userRegister *models.UserRegister) error {
+	user, _ := dao.UserDao.FindByUsername(userRegister.Username)
+
+	if user != nil && user.UserID != "" {
+		return models.ErrUserExits
+	}
+
+	err := dao.UserDao.Insert(userRegister)
+
+	if err != nil {
+		logx.Error("注册时发生异常: %v", err)
+
+		return models.ErrRegister
+	}
+
+	return nil
 }

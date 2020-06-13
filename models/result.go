@@ -29,6 +29,8 @@ var (
 
 var (
 	ErrUserNotExits = errors.New("用户不存在")
+	ErrUserExits    = errors.New("用户已存在")
+	ErrRegister     = errors.New("注册失败")
 	ErrUnknow       = errors.New("未知错误")
 )
 

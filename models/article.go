@@ -45,7 +45,7 @@ type (
 	// ArticleSave 保存文章
 	ArticleSave struct {
 		Title    string        `json:"title" binding:"required"`
-		Tags     []string      `json:"tags" binding:"required"`
+		Tags     string        `json:"tags" binding:"required"`
 		Category string        `json:"category" binding:"required"`
 		SubTitle string        `json:"subTitle" binding:"required"`
 		Content  string        `json:"content" binding:"required"`

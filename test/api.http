@@ -33,3 +33,22 @@ Content-Type: application/json
     "username":"kazma",
     "password":"123"
 }
+
+
+###
+POST {{local-service}}/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "kazmjkj",
+    "password":"123"
+}
+
+
+###
+POST {{local-service}}/manage/articles HTTP/1.1
+Content-Type: application/json
+
+{
+
+}

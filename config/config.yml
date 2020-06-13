@@ -4,6 +4,6 @@ mongo:
   username: admin
   password: pw123456
 
-# release为正式
+# PROD为正式
 env: DEV
 jwt-key: WC7fkchY6FL6eS

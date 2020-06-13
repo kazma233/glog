@@ -25,4 +25,10 @@ type (
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
+
+	// UserRegister 用户注册实体类
+	UserRegister struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 )
