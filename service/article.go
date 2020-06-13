@@ -12,13 +12,15 @@ import (
 	"github.com/rs/xid"
 )
 
-type articleServiceCtr struct{}
+type articleSer struct{}
+type manageArticleSer struct{}
 
 // ArticleService article service
-var ArticleService = articleServiceCtr{}
+var ArticleService = articleSer{}
+var ManageArticleService = manageArticleSer{}
 
 // Article 文章列表
-func (articleServiceCtr) Article(query *models.ArticleQuery) *models.Page {
+func (articleSer) Article(query *models.ArticleQuery) *models.Page {
 	query.InitDate()
 
 	total, err := dao.ArticleDao.CountArticle(query)
@@ -38,7 +40,7 @@ func (articleServiceCtr) Article(query *models.ArticleQuery) *models.Page {
 	return pageable.Result(query.PageNo, query.PageSize, total, val)
 }
 
-func (articleServiceCtr) Detail(id string) *models.ArticleDetail {
+func (articleSer) Detail(id string) *models.ArticleDetail {
 	articleDetail, err := dao.ArticleDao.Article(id)
 
 	if err != nil {
@@ -49,8 +51,20 @@ func (articleServiceCtr) Detail(id string) *models.ArticleDetail {
 	return articleDetail
 }
 
+// FindArticleGroupByArchive 按照归档日期分组
+func (articleSer) FindArticleGroupByArchive() []models.ArticleGroup {
+
+	result, err := dao.ArticleDao.FindArticleGroupByArchive()
+
+	if err != nil {
+		logx.Error("新增文章分许信息失败: %v", err)
+	}
+
+	return result
+}
+
 // Save 保存文章
-func (articleServiceCtr) Save(articleSave *models.ArticleSave) {
+func (manageArticleSer) Save(articleSave *models.ArticleSave) {
 	now := time.Now().In(tools.SHLoc)
 	archiveDate := now.Format("2006-01-02")
 	article := &models.Article{
@@ -74,14 +88,36 @@ func (articleServiceCtr) Save(articleSave *models.ArticleSave) {
 	}
 }
 
-// FindArticleGroupByArchive 按照归档日期分组
-func (articleServiceCtr) FindArticleGroupByArchive() []models.ArticleGroup {
-
-	result, err := dao.ArticleDao.FindArticleGroupByArchive()
-
-	if err != nil {
-		logx.Error("新增文章分许信息失败: %v", err)
+// 更新文章
+func (manageArticleSer) Update(articleUpdate *models.ArticleUpdate) error {
+	articleUpdateDTO := &models.ArticleUpdateDTO{
+		ArticleID: articleUpdate.ArticleID,
+		Title:     articleUpdate.Title,
+		SubTitle:  articleUpdate.SubTitle,
+		Content:   articleUpdate.Content,
+		Status:    articleUpdate.Status,
+		Tags:      strings.Split(articleUpdate.Tags, ","),
+		Category:  articleUpdate.Category,
 	}
 
-	return result
+	return dao.ArticleDao.Update(articleUpdateDTO)
+}
+
+// AllArticle 通过条件查询所有的文章
+func (manageArticleSer) AllArticle(articleQuery *models.ManageArticleQuery) *models.Page {
+	articleQuery.InitDate()
+
+	total, err := dao.ArticleDao.AllArticleSize(articleQuery)
+	if err != nil {
+		logx.Error("查询管理文章总数失败: %v", err)
+		return pageable.Empty(articleQuery.PageSize)
+	}
+
+	result, err := dao.ArticleDao.AllArticle(articleQuery)
+	if err != nil {
+		logx.Error("查询管理文章列表失败: %v", err)
+		return pageable.Empty(articleQuery.PageSize)
+	}
+
+	return pageable.Result(articleQuery.PageNo, articleQuery.PageSize, total, result)
 }

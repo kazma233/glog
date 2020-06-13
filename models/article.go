@@ -22,8 +22,8 @@ type Article struct {
 	Category    string        `bson:"category" json:"category"`
 	SubTitle    string        `bson:"subTitle" json:"subtitle"`
 	Content     string        `bson:"content" json:"content"`
-	CreateTime  LocalTime     `bson:"createTime" json:"-"`
-	UpdateTime  LocalTime     `bson:"updateTime" json:"latestTime"`
+	CreateTime  LocalTime     `bson:"createTime" json:"latestTime"`
+	UpdateTime  LocalTime     `bson:"updateTime" json:"-"`
 	Visit       int64         `bson:"visit" json:"visit"`
 	Status      ArticleStatus `bson:"status" json:"-"`
 	ArchiveDate string        `bson:"archiveDate" json:"-"`
@@ -42,6 +42,16 @@ type (
 		Query
 	}
 
+	// ManageArticleQuery 管理页面的文章查询对象
+	ManageArticleQuery struct {
+		Query
+		ArticleID string        `form:"id"`
+		Title     string        `form:"title"`
+		Category  string        `form:"category"`
+		Tags      string        `form:"tags"`
+		Status    ArticleStatus `form:"status"`
+	}
+
 	// ArticleSave 保存文章
 	ArticleSave struct {
 		Title    string        `json:"title" binding:"required"`
@@ -50,6 +60,28 @@ type (
 		SubTitle string        `json:"subTitle" binding:"required"`
 		Content  string        `json:"content" binding:"required"`
 		Status   ArticleStatus `json:"status" binding:"required"`
+	}
+
+	// ArticleUpdate 更新文章
+	ArticleUpdate struct {
+		ArticleID string        `json:"id" binding:"required"`
+		Title     string        `json:"title" binding:"required"`
+		Tags      string        `json:"tags" binding:"required"`
+		Category  string        `json:"category" binding:"required"`
+		SubTitle  string        `json:"subTitle" binding:"required"`
+		Content   string        `json:"content" binding:"required"`
+		Status    ArticleStatus `json:"status" binding:"required"`
+	}
+
+	// ArticleUpdateDTO 存入数据库对象
+	ArticleUpdateDTO struct {
+		ArticleID string
+		Title     string
+		Tags      []string
+		Category  string
+		SubTitle  string
+		Content   string
+		Status    ArticleStatus
 	}
 )
 
@@ -60,20 +92,21 @@ type (
 		Title      string    `bson:"title" json:"title"`
 		Tags       []string  `bson:"tags" json:"tags"`
 		Category   string    `bson:"category" json:"category"`
-		SubTitle   string    `bson:"subTitle" json:"subtitle"`
-		UpdateTime LocalTime `bson:"updateTime" json:"latestTime"`
+		SubTitle   string    `bson:"subTitle" json:"subTitle"`
+		CreateTime LocalTime `bson:"createTime" json:"latestTime"`
 	}
 
 	// ArticleDetail Article实体
 	ArticleDetail struct {
-		ArticleID  string    `bson:"articleId" json:"id"`
-		Title      string    `bson:"title" json:"title"`
-		Tags       []string  `bson:"tags" json:"tags"`
-		Category   string    `bson:"category" json:"category"`
-		SubTitle   string    `bson:"subTitle" json:"subtitle"`
-		Content    string    `bson:"content" json:"content"`
-		Visit      int64     `bson:"visit" json:"visit"`
-		UpdateTime LocalTime `bson:"updateTime" json:"latestTime"`
+		ArticleID  string        `bson:"articleId" json:"id"`
+		Title      string        `bson:"title" json:"title"`
+		Tags       []string      `bson:"tags" json:"tags"`
+		Category   string        `bson:"category" json:"category"`
+		SubTitle   string        `bson:"subTitle" json:"subTitle"`
+		Content    string        `bson:"content" json:"content"`
+		Visit      int64         `bson:"visit" json:"visit"`
+		Status     ArticleStatus `bson:"status" json:"status"`
+		CreateTime LocalTime     `bson:"createTime" json:"latestTime"`
 	}
 
 	// ArticleGroupSimple 归档
@@ -85,6 +118,19 @@ type (
 
 	// ArticleGroup 文章归档日期聚合
 	ArticleGroup struct {
-		Articles []ArticleGroupSimple `bson:"articles" json:"articles"`
+		ArchiveDate string               `bson:"_id" json:"archiveDate"`
+		Articles    []ArticleGroupSimple `bson:"articles" json:"articles"`
+	}
+
+	// ArticleManageDetail 管理文章实体类
+	ArticleManageDetail struct {
+		ArticleID  string        `bson:"articleId" json:"id"`
+		Title      string        `bson:"title" json:"title"`
+		Tags       []string      `bson:"tags" json:"tags"`
+		Category   string        `bson:"category" json:"category"`
+		SubTitle   string        `bson:"subTitle" json:"subTitle"`
+		Visit      int64         `bson:"visit" json:"visit"`
+		CreateTime LocalTime     `bson:"createTime" json:"latestTime"`
+		Status     ArticleStatus `bson:"status" json:"status"`
 	}
 )

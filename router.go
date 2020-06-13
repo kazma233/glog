@@ -28,7 +28,9 @@ func Router() *gin.Engine {
 	userGroup.POST("/register", handler.UserCtr.Register)
 
 	manageGroup := g.Group("/manage", authRouter)
-	manageGroup.POST("/articles", handler.ArticleCtr.Save)
+	manageGroup.GET("/articles", handler.ManageArticleCtr.AllArticle)
+	manageGroup.POST("/articles", handler.ManageArticleCtr.Save)
+	manageGroup.PUT("/articles", handler.ManageArticleCtr.Update)
 
 	g.Use(errorFilter)
 	return g

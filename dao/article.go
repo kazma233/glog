@@ -8,13 +8,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type articleDaoctr struct{}
+type articleDao struct{}
 
 // ArticleDao 控制获取Article的doa
-var ArticleDao = articleDaoctr{}
+var ArticleDao = articleDao{}
 
 // FindArticle 分页查找文章
-func (articleDaoctr) FindArticle(articleQuery *models.ArticleQuery) ([]models.ArticleSimple, error) {
+func (articleDao) FindArticle(articleQuery *models.ArticleQuery) ([]models.ArticleSimple, error) {
 	skip := (articleQuery.PageNo - 1) * articleQuery.PageSize
 
 	cursor, err := articleColl.Find(
@@ -22,7 +22,7 @@ func (articleDaoctr) FindArticle(articleQuery *models.ArticleQuery) ([]models.Ar
 		bson.M{"status": models.ArticleShow},
 		options.
 			Find().
-			SetProjection(bson.M{"articleId": 1, "title": 1, "tags": 1, "category": 1, "subTitle": 1, "updateTime": 1}).
+			SetProjection(bson.M{"articleId": 1, "title": 1, "tags": 1, "category": 1, "subTitle": 1, "createTime": 1}).
 			SetSkip(skip).
 			SetLimit(articleQuery.PageSize).
 			SetSort(bson.M{"createTime": -1}),
@@ -39,18 +39,18 @@ func (articleDaoctr) FindArticle(articleQuery *models.ArticleQuery) ([]models.Ar
 	return articles, err
 }
 
-func (articleDaoctr) CountArticle(articleQuery *models.ArticleQuery) (int64, error) {
+func (articleDao) CountArticle(articleQuery *models.ArticleQuery) (int64, error) {
 	return articleColl.CountDocuments(create3SCtx(), bson.M{"status": models.ArticleShow})
 }
 
-func (articleDaoctr) Article(id string) (*models.ArticleDetail, error) {
+func (articleDao) Article(id string) (*models.ArticleDetail, error) {
 	articleDetail := &models.ArticleDetail{}
 	sr := articleColl.FindOne(
 		create3SCtx(),
 		bson.M{"status": models.ArticleShow, "articleId": id},
 		options.
 			FindOne().
-			SetProjection(bson.M{"articleId": 1, "title": 1, "tags": 1, "category": 1, "subTitle": 1, "updateTime": 1, "content": 1, "visit": 1}),
+			SetProjection(bson.M{"articleId": 1, "title": 1, "tags": 1, "category": 1, "subTitle": 1, "createTime": 1, "content": 1, "visit": 1, "status": 1}),
 	)
 	if err := sr.Err(); err != nil {
 		return nil, err
@@ -61,21 +61,15 @@ func (articleDaoctr) Article(id string) (*models.ArticleDetail, error) {
 	return articleDetail, err
 }
 
-// SaveArticle 保存
-func (articleDaoctr) SaveArticle(article *models.Article) error {
-	_, err := articleColl.InsertOne(create3SCtx(), article)
-
-	return err
-}
-
 // FindArticleGroupByArchive 按归档日期分组查询
-func (articleDaoctr) FindArticleGroupByArchive() ([]models.ArticleGroup, error) {
+func (articleDao) FindArticleGroupByArchive() ([]models.ArticleGroup, error) {
 	result := []models.ArticleGroup{}
 
 	cursor, err := articleColl.Aggregate(create3SCtx(), mongo.Pipeline{
 		{{"$match", bson.D{{"status", models.ArticleShow}}}},
-		{{"$group", bson.D{{"_id", "archiveDate"}, {"articles", bson.D{{"$push", "$$ROOT"}}}}}},
+		{{"$group", bson.D{{"_id", "$archiveDate"}, {"articles", bson.D{{"$push", "$$ROOT"}}}}}},
 		{{"$project", bson.D{{"articles.articleId", 1}, {"articles.title", 1}, {"articles.visit", 1}}}},
+		{{"$sort", bson.M{"_id": -1}}},
 	})
 
 	if err != nil {
@@ -85,4 +79,81 @@ func (articleDaoctr) FindArticleGroupByArchive() ([]models.ArticleGroup, error) 
 	err = cursor.All(create3SCtx(), &result)
 
 	return result, err
+}
+
+// SaveArticle 保存
+func (articleDao) SaveArticle(article *models.Article) error {
+	_, err := articleColl.InsertOne(create3SCtx(), article)
+
+	return err
+}
+
+func (articleDao) Update(articleUpdate *models.ArticleUpdateDTO) error {
+	_, err := articleColl.UpdateOne(create3SCtx(), bson.M{
+		"articleId": articleUpdate.ArticleID,
+	}, bson.M{
+		"$set": bson.M{
+			"title":    articleUpdate.Title,
+			"subTitle": articleUpdate.SubTitle,
+			"tags":     articleUpdate.Tags,
+			"category": articleUpdate.Category,
+			"content":  articleUpdate.Content,
+			"status":   articleUpdate.Status,
+		},
+	})
+
+	return err
+}
+
+// AllArticle 按条件查找
+func (articleDao) AllArticle(articleQuery *models.ManageArticleQuery) ([]models.ArticleManageDetail, error) {
+	skip := (articleQuery.PageNo - 1) * articleQuery.PageSize
+
+	cursor, err := articleColl.Find(create3SCtx(), getAllArticleQueryFilter(articleQuery), options.
+		Find().
+		SetProjection(bson.M{"articleId": 1, "title": 1, "tags": 1, "category": 1, "subTitle": 1, "createTime": 1, "visit": 1, "status": 1}).
+		SetSkip(skip).
+		SetLimit(articleQuery.PageSize).
+		SetSort(bson.M{"createTime": -1}),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := []models.ArticleManageDetail{}
+	err = cursor.All(create3SCtx(), &result)
+
+	return result, err
+}
+
+// AllArticle 按条件查找
+func (articleDao) AllArticleSize(articleQuery *models.ManageArticleQuery) (int64, error) {
+	return articleColl.CountDocuments(create3SCtx(), getAllArticleQueryFilter(articleQuery))
+}
+
+func getAllArticleQueryFilter(articleQuery *models.ManageArticleQuery) bson.M {
+	filter := bson.M{}
+
+	if articleQuery.ArticleID != "" {
+		filter["articleId"] = articleQuery.ArticleID
+	}
+
+	if articleQuery.Title != "" {
+		filter["title"] = articleQuery.Title
+	}
+
+	if articleQuery.Tags != "" {
+		filter["tags"] = articleQuery.Tags
+	}
+
+	if articleQuery.Category != "" {
+		filter["category"] = articleQuery.Category
+	}
+
+	if articleQuery.Status != "" {
+		filter["status"] = articleQuery.Status
+	}
+
+	return filter
 }
