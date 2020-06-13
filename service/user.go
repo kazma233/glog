@@ -9,6 +9,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type userSer struct {
@@ -28,6 +29,10 @@ func (userSer) Login(login *models.UserLogin) (string, error) {
 
 		logx.Error("查询用户出错: %v", err)
 		return "", models.ErrUnknow
+	}
+
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login.Password)) != nil {
+		return "", models.ErrUserLogin
 	}
 
 	token := jwt.NewWithClaims(
@@ -54,7 +59,15 @@ func (userSer) Register(userRegister *models.UserRegister) error {
 		return models.ErrUserExits
 	}
 
-	err := dao.UserDao.Insert(userRegister)
+	pw, err := bcrypt.GenerateFromPassword([]byte(userRegister.Password), bcrypt.DefaultCost)
+	if err != nil {
+		logx.Error("密码加密错误: %v", err)
+		return models.ErrUnknow
+	}
+
+	userRegister.Password = string(pw)
+
+	err = dao.UserDao.Insert(userRegister)
 
 	if err != nil {
 		logx.Error("注册时发生异常: %v", err)

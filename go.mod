@@ -12,7 +12,7 @@ require (
 	github.com/rs/xid v1.2.1
 	go.mongodb.org/mongo-driver v1.3.4
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
+	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
 	golang.org/x/sys v0.0.0-20200602225109-6fdc65e7d980 // indirect
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
