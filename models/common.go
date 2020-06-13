@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"glog/utils/tools"
 	"time"
 )
 
@@ -48,7 +49,7 @@ type LocalTime struct {
 
 // MarshalJSON JOSN序列化
 func (t LocalTime) MarshalJSON() ([]byte, error) {
-	tune := t.Time.Format(time.RFC3339)
+	tune := t.Time.In(tools.SHLoc).Format("2006-01-02 15:04:05")
 	return []byte(`"` + tune + `"`), nil
 }
 
