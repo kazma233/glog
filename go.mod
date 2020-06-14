@@ -9,6 +9,7 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rs/xid v1.2.1
 	go.mongodb.org/mongo-driver v1.3.4
 	go.uber.org/zap v1.15.0

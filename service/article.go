@@ -3,6 +3,7 @@ package service
 import (
 	"glog/dao"
 	"glog/models"
+	"glog/utils/gcache"
 	"glog/utils/logx"
 	"glog/utils/pageable"
 	"glog/utils/tools"
@@ -23,6 +24,11 @@ var ManageArticleService = manageArticleSer{}
 func (articleSer) Article(query *models.ArticleQuery) *models.Page {
 	query.InitDate()
 
+	result, ok := gcache.ArticleCacheHandler.GetCacheHome(query)
+	if ok {
+		return result
+	}
+
 	total, err := dao.ArticleDao.CountArticle(query)
 	if err != nil {
 		logx.Error("查询文章数量失败: %v", err)
@@ -37,16 +43,30 @@ func (articleSer) Article(query *models.ArticleQuery) *models.Page {
 		return pageable.Empty(query.PageSize)
 	}
 
-	return pageable.Result(query.PageNo, query.PageSize, total, val)
+	pageResult := pageable.Result(query.PageNo, query.PageSize, total, val)
+
+	gcache.ArticleCacheHandler.CacheHome(query, pageResult)
+
+	return pageResult
 }
 
 func (articleSer) Detail(id string) *models.ArticleDetail {
+	dao.ArticleDao.VisitInc(id)
+
+	result, ok := gcache.ArticleCacheHandler.Get(id)
+
+	if ok {
+		return result
+	}
+
 	articleDetail, err := dao.ArticleDao.Article(id)
 
 	if err != nil {
 		logx.Error("查询id： %v的文章出错: %v", id, err)
 		return nil
 	}
+
+	gcache.ArticleCacheHandler.Put(id, articleDetail)
 
 	return articleDetail
 }
@@ -99,6 +119,8 @@ func (manageArticleSer) Update(articleUpdate *models.ArticleUpdate) error {
 		Tags:      strings.Split(articleUpdate.Tags, ","),
 		Category:  articleUpdate.Category,
 	}
+
+	gcache.ArticleCacheHandler.Delete(articleUpdate.ArticleID)
 
 	return dao.ArticleDao.Update(articleUpdateDTO)
 }

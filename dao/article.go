@@ -132,6 +132,11 @@ func (articleDao) AllArticleSize(articleQuery *models.ManageArticleQuery) (int64
 	return articleColl.CountDocuments(create3SCtx(), getAllArticleQueryFilter(articleQuery))
 }
 
+// 浏览量+1
+func (articleDao) VisitInc(id string) {
+	_, _ = articleColl.UpdateOne(create3SCtx(), bson.M{"articleId": id}, bson.M{"$inc": bson.M{"visit": 1}})
+}
+
 func getAllArticleQueryFilter(articleQuery *models.ManageArticleQuery) bson.M {
 	filter := bson.M{}
 
