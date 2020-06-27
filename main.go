@@ -1,5 +1,6 @@
 package main
 
+
 import (
 	"glog/config"
 	"log"
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+
 	mode := config.Conf().Env
 	if strings.Compare(mode, "PROD") == 0 {
 		gin.SetMode(gin.ReleaseMode)

@@ -1,5 +1,6 @@
 package models
 
 var (
-	ConsUID = "uid"
+	ConsUID    = "uid"
+	AssetsPath = "../assets"
 )

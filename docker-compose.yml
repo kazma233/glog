@@ -18,7 +18,5 @@ services:
     restart: always
     ports: 
       - 9600:9600
-    volumes: 
-      - ./config:/app/config
     depends_on: 
       - glog_mongo

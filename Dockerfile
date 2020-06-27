@@ -1,11 +1,9 @@
 FROM golang:1.14.4-alpine3.12
 
-WORKDIR /app
-COPY . /app
-
-RUN go build -o app
+COPY ./app /app
 
 RUN ["chmod", "755", "app"]
 
 EXPOSE 9600
+
 ENTRYPOINT ["./app"]

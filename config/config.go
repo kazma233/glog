@@ -1,9 +1,11 @@
 package config
 
+//go:generate go run ../cmd/binclude
+
 import (
+	"github.com/lu4p/binclude"
 	"glog/models"
 	"io/ioutil"
-	"os"
 
 	"gopkg.in/yaml.v3"
 )
@@ -16,15 +18,17 @@ func Conf() *models.Config {
 }
 
 func init() {
+	binclude.Include("../assets")
+
 	conf := models.Config{}
 
-	file, err := os.OpenFile("./config/config.yml", os.O_RDONLY, 0755)
+	f, err := BinFS.Open("../assets/config.yml")
 
 	if err != nil {
 		panic(err)
 	}
 
-	bs, err := ioutil.ReadAll(file)
+	bs, err := ioutil.ReadAll(f)
 
 	if err != nil {
 		panic(err)
