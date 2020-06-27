@@ -1,6 +1,6 @@
 FROM alpine
 
-COPY ./app /app
+COPY ./app ./app
 
 RUN ["chmod", "755", "app"]
 
