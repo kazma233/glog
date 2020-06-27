@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM golang:1.14.4-alpine3.12
 
 COPY ./app /app
 
