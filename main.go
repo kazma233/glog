@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"glog/config"
 	"log"
