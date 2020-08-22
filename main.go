@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	_ "time/tzdata"
 )
 
 func main() {

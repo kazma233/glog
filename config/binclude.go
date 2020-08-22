@@ -8,6 +8,6 @@ import (
 )
 
 var (
-	_binclude0	= []byte("mongo:\n  host: 192.168.1.103\n  port: 27017\n  username: admin\n  password: pw123456\n\n# PROD为正式\nenv: DEV\njwt-key: WC7fkchY6FL6eS")
-	BinFS		= binclude.FileSystem{"../assets": {Filename: "assets", Mode: 2147484157, ModTime: time.Unix(1595688417, 81873061), Compression: binclude.None, Content: nil}, "../assets/config.yml": {Filename: "config.yml", Mode: 436, ModTime: time.Unix(1595693075, 509111664), Compression: binclude.None, Content: _binclude0}}
+	_binclude0	= []byte("mongo:\n  host: 192.168.1.103\n  port: 27017\n  username: admin\n  password: pw123456\n\n# PROD为正式\nenv: DEV\njwt-key: WC7fkchY6FL6eS1")
+	BinFS		= binclude.FileSystem{"../assets": {Filename: "assets", Mode: 2147484157, ModTime: time.Unix(1595688417, 81873061), Compression: binclude.None, Content: nil}, "../assets/config.yml": {Filename: "config.yml", Mode: 436, ModTime: time.Unix(1598033215, 151523644), Compression: binclude.None, Content: _binclude0}}
 )

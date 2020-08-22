@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"log"
 	"time"
 )
 
@@ -18,8 +17,7 @@ func init() {
 func getShangHaiLoc() *time.Location {
 	cstSh, err := time.LoadLocation("Asia/Shanghai")
 	if err != nil {
-		log.Printf("解析Asia/Shanghai时区失败: %s", err.Error())
-		cstSh = time.Local
+		panic(err)
 	}
 
 	return cstSh

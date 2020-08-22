@@ -6,4 +6,4 @@ mongo:
 
 # PROD为正式
 env: DEV
-jwt-key: WC7fkchY6FL6eS
+jwt-key: WC7fkchY6FL6eS1
