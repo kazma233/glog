@@ -20,7 +20,7 @@ Content-Type: application/json
 
 {
     "username":"kazma",
-    "password":"Kazma1331."
+    "password":"pw123456"
 }
 
 ###
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 {
     "username": "kazma",
-    "password":"Kazma1331."
+    "password":"pw123456"
 }
 
 ###

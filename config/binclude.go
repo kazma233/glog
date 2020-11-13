@@ -8,6 +8,6 @@ import (
 )
 
 var (
-	_binclude0	= []byte("mongo:\n  host: 192.168.1.103\n  port: 27017\n  username: admin\n  password: pw123456\n\n# PROD为正式\nenv: DEV\njwt-key: WC7fkchY6FL6eS1")
-	BinFS		= binclude.FileSystem{"../assets": {Filename: "assets", Mode: 2147484157, ModTime: time.Unix(1595688417, 81873061), Compression: binclude.None, Content: nil}, "../assets/config.yml": {Filename: "config.yml", Mode: 436, ModTime: time.Unix(1598033215, 151523644), Compression: binclude.None, Content: _binclude0}}
+	_binclude0 = []byte("mongo:\r\n  host: 127.0.01\r\n  port: 27017\r\n  username: admin\r\n  password: pw123456\r\n\r\n# PROD为正式\r\nenv: DEV\r\njwt-key: WC7fkchY6FL6eS1")
+	BinFS      = &binclude.FileSystem{Files: map[string]*binclude.File{"..": {Filename: "..", Mode: 2147484159, ModTime: time.Unix(1605256962, 662002100), Compression: binclude.None, Content: nil}, "../assets": {Filename: "assets", Mode: 2147484159, ModTime: time.Unix(1605256396, 200988200), Compression: binclude.None, Content: nil}, "../assets/config.yml": {Filename: "config.yml", Mode: 438, ModTime: time.Unix(1605256830, 659035100), Compression: binclude.None, Content: _binclude0}, "..\\assets": {Filename: "assets", Mode: 2147484159, ModTime: time.Unix(1605256962, 662002100), Compression: binclude.None, Content: nil}}}
 )
